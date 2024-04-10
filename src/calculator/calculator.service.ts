@@ -10,7 +10,6 @@ export class CalculatorService {
   async calculate(calculator: CreateCalculatorDto): Promise<CreateCalculatorDto>  {
 
     const key = `calculator_${calculator.firstNum}${calculator.action}${calculator.secondNum}`;
-    let successOperation = false;
 
     if (await this.redis.keyExists(key)) {
       calculator.result = + await this.redis.getValue(key);
@@ -31,32 +30,23 @@ export class CalculatorService {
       switch (calculator.action) {
         case '+':
           calculator.result = firstNum + secondNum;
-          successOperation = true;
           break;
         case '-':
           calculator.result = firstNum - secondNum;
-          successOperation = true;
           break;
         case '*':
           calculator.result = firstNum * secondNum;
-          successOperation = true;
           break;
         case '/':
-          if (secondNum == 0) {
-            calculator.result = 0;
-            successOperation = false;
-          } else {
             calculator.result = firstNum / secondNum;
-            successOperation = true;
-          }
           break;
       }
-      if (successOperation) {
+
         await this.data.create(calculator);
         await this.redis.setValue(key, calculator.result);
-      }
-      console.log(`stage of calculating ${successOperation} ${calculator.action}`);
-      return calculator;
+
+        console.log(`stage of calculating at action ${calculator.action}`);
+        return calculator;
     }
   }
 }

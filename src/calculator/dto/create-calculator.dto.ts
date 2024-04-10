@@ -1,4 +1,12 @@
-import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsNotIn, IsOptional } from "class-validator";
+import {
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsNotIn,
+  IsOptional,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class CreateCalculatorDto {
   @IsInt()
@@ -6,18 +14,14 @@ export class CreateCalculatorDto {
   firstNum: number;
   @IsInt()
   @IsNotEmpty()
-  @IsNotIn([8])
+  @IsNotIn([0])
   secondNum: number;
   @IsIn(['+','-','*','/'])
+  @MinLength(1)
+  @MaxLength(1)
   @IsNotEmpty()
   action: string;
   @IsInt()
   @IsOptional()
   result: number;
-//   @IsBoolean()
-//   @IsOptional()
-//   successOperation: boolean = false;
-//   @IsBoolean()
-//   @IsOptional()
-//   forcedRefresh: boolean = false;
 }

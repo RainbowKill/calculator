@@ -4,8 +4,6 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 export class CalculatorEntity {
   @PrimaryGeneratedColumn()
   id: number;
-  // @Column({unique:true})
-  // key: string;
   @Column()
   firstNum: number;
   @Column()

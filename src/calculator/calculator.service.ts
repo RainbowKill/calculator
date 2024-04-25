@@ -1,52 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCalculatorDto } from './dto/create-calculator.dto';
-import { RedisService } from "../services/redis.service";
-import { MySQLService } from "../services/MySQL.service";
+import { DataCalculatorService } from "./data.calculator.service";
 
 @Injectable()
 export class CalculatorService {
-  constructor(private readonly redis: RedisService, private readonly data: MySQLService) {}
+  constructor(private readonly dataCalculatorService: DataCalculatorService) {}
 
-  async calculate(calculator: CreateCalculatorDto): Promise<CreateCalculatorDto>  {
+  async calculate(calculatorDto: CreateCalculatorDto): Promise<CreateCalculatorDto>  {
 
-    const key = `calculator_${calculator.firstNum}${calculator.action}${calculator.secondNum}`;
+    let data: any;
+    data = await this.dataCalculatorService.getData(calculatorDto);
 
-    if (await this.redis.keyExists(key)) {
-      calculator.result = + await this.redis.getValue(key);
-      console.log('stage of redis');
-      return calculator;
-    }
-
-    else if (this.data.findOneResult(calculator)) {
-      calculator.result = this.data.findOneResult(calculator)
-      await this.redis.setValue(key, calculator.result);
-      console.log('stage of mysql');
-      return calculator;
-    }
-
+    if (data) return data;
     else {
-      const firstNum = calculator.firstNum;
-      const secondNum = calculator.secondNum;
-      switch (calculator.action) {
-        case '+':
-          calculator.result = firstNum + secondNum;
-          break;
-        case '-':
-          calculator.result = firstNum - secondNum;
-          break;
-        case '*':
-          calculator.result = firstNum * secondNum;
-          break;
-        case '/':
-            calculator.result = firstNum / secondNum;
-          break;
-      }
-
-        await this.data.create(calculator);
-        await this.redis.setValue(key, calculator.result);
-
-        console.log(`stage of calculating at action ${calculator.action}`);
-        return calculator;
+      data = this.dataCalculatorService.calculateData(calculatorDto);
+      await this.dataCalculatorService.createData(data);
+      return data;
     }
   }
 }

@@ -1,21 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import Redis from "ioredis";
+import { ConfigService } from "@nestjs/config";
+import { CreateCalculatorDto } from "../calculator/dto/create-calculator.dto";
+import { LogService } from "./log.service";
 
-const redis = new Redis({
-  port: 6379,
-  host: '127.0.0.1'
-})
+
+
 
 @Injectable()
 export class RedisService {
-  async setValue(key: string, value:any): Promise<void> {
-    redis.set(key, value);
+  private readonly redis : Redis
+  constructor(configService: ConfigService, private readonly logger: LogService) {
+    this.redis = new Redis( configService.get('redis'));
+    console.log('Новое подключение к редису')
   }
-  async getValue(key: string): Promise<any> {
 
-    return redis.get(key);
+  async setToCache(key: string, calculatorDto: CreateCalculatorDto){
+    let data = JSON.stringify(calculatorDto);
+    this.logger.log(`${this.constructor.name}/${this.setToCache.name} - Set data to cache ${data}`)
+    await this.redis.set(key, data);
   }
-  async keyExists(key: string): Promise<boolean> {
-    return await redis.exists(key) === 1;
+
+  async getFromCache(key: string) {
+    let data = await this.redis.get(key)
+    if (!data)
+    {
+      this.logger.log(`${this.constructor.name}/${this.getFromCache.name} - Get data from cache ${data}`)
+      return data;
+    }
+    this.logger.log(`${this.constructor.name}/${this.getFromCache.name} - Get data from cache ${data}`)
+    return await JSON.parse(data);
   }
+
 }

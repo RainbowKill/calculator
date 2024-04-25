@@ -6,6 +6,7 @@ import {
   IsOptional,
   MaxLength,
   MinLength,
+  validate
 } from "class-validator";
 
 export class CreateCalculatorDto {
@@ -24,4 +25,15 @@ export class CreateCalculatorDto {
   @IsInt()
   @IsOptional()
   result: number;
+
+  validateFields() {
+    if (this.action === '/' && this.secondNum === 0) {
+      throw new Error('You can not divide by zero');
+    }
+  }
+
+  async validate() {
+    await validate(this);
+    this.validateFields();
+  }
 }

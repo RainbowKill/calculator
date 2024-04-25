@@ -1,16 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, Column, Index, PrimaryColumn } from "typeorm";
 
-@Entity()
+@Entity('calculator')
+@Index(['firstNum','secondNum','action'], {unique:true})
 export class CalculatorEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
+  @PrimaryColumn({
+    type: 'int',
+  })
   firstNum: number;
-  @Column()
+  @Column({
+    type: 'int',
+  })
   secondNum: number;
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 1,
+  })
   action: string;
-  @Column()
+  @Column({
+    type: 'int',
+  })
   result: number;
-
 }

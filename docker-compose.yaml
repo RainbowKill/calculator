@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    restart: always
+    command: redis-server --requirepass Maks123
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: Maks123
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Maks123
+      MYSQL_DATABASE: calculator
+      MYSQL_USER: RainbowKill
+      MYSQL_PASSWORD: Maks123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=Maks123
+    volumes:
+      - ./grafana_data:/var/lib/grafana

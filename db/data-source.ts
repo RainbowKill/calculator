@@ -1,15 +1,10 @@
-import { DataSourceOptions, DataSource } from 'typeorm'
+import { DataSource, DataSourceOptions } from "typeorm";
+import {config} from "../config/configuration"
 
-export const dataSourceOptions : DataSourceOptions = {
-  "type": "mysql",
-  "host": "localhost",
-  "port": 3306,
-  "username": "RainbowKill",
-  "password": "Maks123",
-  "database": "calculator_database",
-  "entities": ['dist/**/*.entity.js'],
-  "migrations": ['dist/db/migrations/*.js'],
-}
+require("dotenv").config()
 
+console.log(config().mysql)
+
+export const dataSourceOptions : DataSourceOptions = config().mysql as DataSourceOptions
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
